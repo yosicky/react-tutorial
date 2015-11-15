@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>React Tutorial</title>
+    <!-- Not present in the tutorial. Just for basic styling. -->
+    <link rel="stylesheet" href="css/base.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.14.0/react.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.14.0/react-dom.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.6.15/browser.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/0.3.2/marked.min.js"></script>
+  </head>
+  <body>
+    <div id="content"></div>
+    <script type="text/babel">
+/*
+      var CommentBox = React.createClass({
+        getInitialState: function () {
+          return {data: []};
+        },
+        render: function () {
+          return (
+            <div className="commentBox">
+              <h1>Comments</h1>
+              <CommentList data={this.state.data} />
+              <CommentForm />
+            </div>
+          );
+        }
+      });
+
+      var CommentList = React.createClass({
+        render: function () {
+          var commentNodes = this.props.data.map(function (comment) {
+            return (
+              <Comment author={comment.author}>
+                {comment.text}
+              </Comment>
+            );
+          });
+          return (
+            <div className="commentList">
+              {commentNodes}
+            </div>
+          );
+        }
+      });
+
+      var CommentForm = React.createClass({
+        render: function () {
+          return (
+            <div className="commentForm">
+              Hello, world! I am a CommentForm です.
+            </div>
+          );
+        }
+      });
+
+      var Comment = React.createClass({
+        render: function () {
+          var rawMarkup = marked(this.props.children.toString(), {sanitize: true});
+          return (
+            <div className="comment">
+              <h2 className="commentAuthor">
+                {this.props.author}
+              </h2>
+              <span dangerouslySetInnerHTML={{__html: rawMarkup}} />
+            </div>
+          );
+        }
+      });
+
+      var data = [
+        {author: "Pete Hunt", text: "This is one comment"},
+        {author: "Jordan Walke", text: "This is *another* comment"}
+      ];
+
+      ReactDOM.render(
+        <CommentBox url="comments.json" />,
+        document.getElementById('content')
+      );
+*/
+
+      var DeviceInfo = React.createClass({
+        getInitialState: function () {
+          return {
+            modelId: null,
+            displaySearch: true
+          };
+        },
+        changeDisplay: function (type) {
+          if (type === 'search') {
+            this.setState({displaySearch: true});
+          } else if (type === 'detail') {
+            this.setState({displaySearch: false});
+          }
+        },
+        setId: function (id) {
+          this.setState({modelId: id});
+        },
+        render: function () {
+          if (this.state.displaySearch) {
+            return (
+              <SearchBox changeDisplay={this.changeDisplay} setId={this.setId} />
+            );
+          } else {
+            console.log('ID: '+ this.state.modelId);
+            return (
+              <DetailBox changeDisplay={this.changeDisplay} modelId={this.state.modelId} />
+            );
+          }
+        }
+      });
+
+      var SearchBox = React.createClass({
+        getInitialState: function () {
+          return {
+            data: [],
+            searched: false
+          };
+        },
+        setResult: function (result) {
+          this.setState({data: result, searched: true});
+        },
+        render: function () {
+          console.log('data' + this.state.data);
+          var resultListNode = null;
+
+          if (this.state.searched) {
+            resultListNode = (
+              <ResultList data={this.state.data} />
+            );
+          }
+
+          return (
+            <div className="searchBox">
+              <h1>Device search</h1>
+              <SearchForm setResult={this.setResult} />
+              {resultListNode}
+            </div>
+          );
+        }
+      });
+
+      var SearchForm = React.createClass({
+        getDefaultProps: function () {
+          return {
+            searchMethodList: {
+              type1: "モデルID",
+              type2: "端末ID",
+              type3: "モデル名"
+            }
+          }
+        },
+        getInitialState: function () {
+          return {
+            methodType: 0,
+            placeholderText: "",
+            valueInit: false,
+            sendValue: "",
+            canSend: false
+          };
+        },
+        handleSubmit: function (e) {
+          var result = [
+            {id: 2, name: 'hage'},
+            {id: 6, name: 'hoge'},
+            {id: 14, name: 'fuga'}
+          ];
+//          var result = null;
+          e.preventDefault();
+          console.log('submit!' + this.state.sendValue);
+          this.props.setResult(result);
+        },
+        handleMethod: function (value) {
+          console.log(value);
+          this.setState({methodType: value, valueInit: true});
+          if (value === 0) {
+            this.setState({canSend: true, });
+          } else {
+            this.setState({canSend: false});
+          }
+        },
+        handleValue: function (value) {
+          console.log(value);
+          this.setState({sendValue: value});
+          if (value.length > 0) {
+            this.setState({canSend: true});
+          } else {
+            this.setState({canSend: false});
+          }
+        },
+        handleValueInit: function (value) {
+          this.setState({valueInit: false});
+        },
+        placeholderTextChange: function (methodType) {
+          var texts = this.props.searchMethodList;
+          var type = "type" + methodType;
+          this.setState({placeholderText: texts[type]});
+        },
+        render: function () {
+          var type = "type" + this.state.methodType;
+          console.log(type);
+          console.log(this.state.sendValue);
+          console.log(this.state.valueInit);
+          if (this.state.methodType === 0) {
+            console.log('全件');
+          } else if (this.state.methodType === 1) {
+            console.log('モデルID');
+          } else if (this.state.methodType === 2) {
+            console.log('端末ID');
+          } else if (this.state.methodType === 3) {
+            console.log('モデル名');
+          }
+          return (
+            <div className="searchForm">
+              <form onSubmit={this.handleSubmit}>
+                <h2>検索</h2>
+                <SearchMethod changeMethod={this.handleMethod} />
+                <SearchValue changeMethod={this.handleValue} focusValue={this.handleValueInit} placeholderText={this.state.placeholderText} valueInit={this.state.valueInit} methodType={this.state.methodType} methodName={this.props.searchMethodList[type]} />
+                <SearchButton canSend={this.state.canSend} />
+              </form>
+            </div>
+          );
+        }
+      });
+
+      var SearchMethod = React.createClass({
+        handleChange: function (e) {
+          this.props.changeMethod(parseInt(e.target.value, 10));
+        },
+        render: function () {
+          return (
+            <div className="searchMethod">
+              <h3>検索方法選択</h3>
+              <label><input type="radio" name="searchMethod" onChange={this.handleChange} value="0" />全件検索</label>
+              <label><input type="radio" name="searchMethod" onChange={this.handleChange} value="1" />モデルIDで検索</label>
+              <label><input type="radio" name="searchMethod" onChange={this.handleChange} value="2" />端末IDで検索</label>
+              <label><input type="radio" name="searchMethod" onChange={this.handleChange} value="3" />モデル名で検索</label>
+            </div>
+          );
+        }
+      });
+
+      var SearchValue = React.createClass({
+        getInitialState: function () {
+          return {
+            textValue: ""
+          };
+        },
+        componentDidUpdate:  function () {
+            console.log("方法変更" + this.props.valueInit);
+            if (this.props.methodType !== 0 && this.props.valueInit) {
+              ReactDOM.findDOMNode(this.refs.v).value = "";
+            }
+        },
+        handleChange: function (e) {
+          var val = e.target.value;
+          this.setState({textValue: val});
+          this.props.changeMethod(val);
+        },
+        handleFocus: function (e) {
+          this.props.focusValue();
+        },
+        render: function () {
+          if (this.props.methodType !== 0) {
+            return (
+              <div className="searchValue">
+                <h3>{this.props.methodName}を入力してください</h3>
+                <input type="text" name="searchValue" value={this.state.textValue} placeholder={this.props.placeholderText} onChange={this.handleChange} onFocus={this.handleFocus} ref="v" />
+              </div>
+            );
+          } else {
+            return null;
+          }
+        }
+      });
+
+      var SearchButton = React.createClass({
+        render: function () {
+          console.log('canSend:' + this.props.canSend);
+          if (this.props.canSend) {
+            return (
+              <button>検索する</button>
+            );
+          } else {
+            return null;
+          }
+        }
+      });
+
+      var ResultList = React.createClass({
+        handleDetail: function () {
+          this.props.changeDisplay('detail');
+          this.props.setId(this.props.model);
+        },
+        render: function() {
+          console.log('resultList');
+          var resultNodes;
+          if (this.props.data) {
+            var result = this.props.data.map(function (model) {
+              return (
+                <li key={model.id}>
+                  {model.id}
+                  {model.name}
+                  <DetailBtn onClick={this.handleDetail} model={model.id}>詳細</DetailBtn>
+                </li>
+              )
+            });
+            resultNodes = (
+              <ul>{result}</ul>
+            );
+          } else {
+            resultNodes = (<p>結果なし</p>);
+          }
+          console.log(resultNodes);
+          return (
+            <div className="resultList">
+              <h2>検索結果</h2>
+              {resultNodes}
+            </div>
+          );
+        }
+      });
+
+      var DetailBtn = React.createClass({
+        render: function () {
+
+        }
+      });
+
+      var DetailBox = React.createClass({
+        render: function () {
+          return (
+            <div className="">
+              <h1>端末詳細</h1>
+            </div>
+          );
+        }
+      });
+
+      ReactDOM.render(
+        <DeviceInfo />,
+        document.getElementById('content')
+      );
+
+    </script>
+  </body>
+</html>
